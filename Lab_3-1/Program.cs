@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -31,6 +30,8 @@ namespace Lab_3_1
             };
 
             int count = 0;
+            int countDates = 0;
+            int i = 1;
             DateTime currentDate = DateTime.MinValue;
             double currentTotal = 0;
 
@@ -39,38 +40,44 @@ namespace Lab_3_1
                 DateTime date = getDate(line);
                 double amount = getAmount(line);
 
+                if (countDates > batchSize)
+                {
+                    i++;
+                    countDates = 1;
+                }
+
                 if (date != currentDate)
                 {
                     if (count > 0)
                     {
                         displayTotal(currentDate, currentTotal);
+                        string tempFilePath = string.Format("transactions_{0}.csv", i);
+                        using (StreamWriter writer = new StreamWriter(tempFilePath, true))
+                        {
+                            writer.WriteLine("{0},{1}", currentDate.ToString(dateFormat), currentTotal);
+                        }
                         currentTotal = 0;
                         count = 0;
                     }
                     currentDate = date;
+                    countDates++;
                 }
                 currentTotal += amount;
                 count++;
-
-                if (count >= batchSize)
+                
+                if (line == File.ReadLines(filePath).Last())
                 {
-                    string tempFilePath = string.Format("transactions_{0}.csv", currentDate.ToString("yyyyMMdd"));
-                    using (StreamWriter writer = new StreamWriter(tempFilePath, true))
+                    if (count > 0)
                     {
-                        writer.WriteLine("{0}, {1}", currentDate.ToString(dateFormat), currentTotal);   
+                        displayTotal(currentDate, currentTotal);
+                        string tempFilePath = string.Format("transactions_{0}.csv", i);
+                        using (StreamWriter writer = new StreamWriter(tempFilePath, true))
+                        {
+                            writer.WriteLine("{0},{1}", currentDate.ToString(dateFormat), currentTotal);
+                        }
+                        currentTotal = 0;
+                        count = 0;
                     }
-                    currentTotal = 0;
-                    count = 0;
-                }
-            }
-            if (count > 0)
-            {
-                displayTotal(currentDate, currentTotal);
-
-                string tempFilePath = string.Format("transactions_{0}.csv", currentDate.ToString("yyyyMMdd"));
-                using (StreamWriter writer = new StreamWriter(tempFilePath, true))
-                {
-                    writer.WriteLine("{0},{1}", currentDate.ToString(dateFormat), currentTotal);
                 }
             }
         }
