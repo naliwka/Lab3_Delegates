@@ -11,6 +11,7 @@ namespace Lab_3_3
             string[] imageFiles = Directory.GetFiles("images");
             int k = 0;
 
+            // To process image in black and white
             Func<Bitmap, Bitmap> grayScale = image =>
             {
                 Bitmap grayBitmap = new Bitmap(image.Width, image.Height);
@@ -27,6 +28,7 @@ namespace Lab_3_3
                 return grayBitmap;
             };
 
+            // To horizontaly flip the image
             /*Func<Bitmap, Bitmap> flipHorizontal = image =>
             {
                 Bitmap flippedBitmap = new Bitmap(image.Width, image.Height);
